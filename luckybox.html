@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมสุ่มกล่องของขวัญสุดหรู</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            /* พื้นหลังแนวหรูหรา (Luxury Radial Gradient) */
+            background: radial-gradient(ellipse at center, #7a5c2f 0%, #2c2012 60%, #0a0703 100%);
+            /* เพิ่ม Texture จางๆ เพื่อความหรูหรา */
+            background-image: radial-gradient(ellipse at center, #7a5c2f 0%, #2c2012 60%, #0a0703 100%), 
+                              url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* ป้องกัน scroll bar โผล่ตอนดุ๊กดิ๊ก */
+        }
+
+        h1 {
+            color: #d4af37; /* สีทอง */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            margin-bottom: 40px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .box-container {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* สไตล์กล่องของขวัญ (ใช้อิโมจิ) */
+        .mystery-box {
+            font-size: 80px; /* ขนาดกล่อง */
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+            /* เงาเพื่อให้ดูมีมิติลอยออกมา */
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            user-select: none; /* ป้องกันการลากคลุมดำที่ตัวอิโมจิ */
+        }
+
+        /* Animation การดุ๊กดิ๊ก */
+        @keyframes wiggle {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            50% { transform: rotate(8deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* เมื่อเอาเมาส์ชี้ จะเริ่มดุ๊กดิ๊ก */
+        .mystery-box:hover:not(.disabled):not(.opened) {
+            animation: wiggle 0.6s ease-in-out infinite;
+            filter: drop-shadow(0 15px 25px rgba(212, 175, 55, 0.4)); /* เพิ่มเงาสีทองตอนชี้ */
+        }
+
+        /* สถานะเมื่อเปิดกล่องที่เลือกแล้ว */
+        .mystery-box.opened {
+            transform: scale(0.9); /* ยุบลงเล็กน้อย */
+            opacity: 0.8;
+            cursor: default;
+            pointer-events: none; /* ปิดการตอบสนองของเมาส์ */
+        }
+
+        /* สถานะปิดการใช้งาน (กล่องที่ไม่ได้เลือก) */
+        .mystery-box.disabled {
+            opacity: 0.3;
+            filter: grayscale(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.5)); /* กลายเป็นสีเทา */
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        #result-area {
+            margin-top: 40px;
+            font-size: 26px;
+            font-weight: bold;
+            min-height: 60px;
+            text-align: center;
+            padding: 20px 30px;
+            border-radius: 15px;
+            width: auto;
+            max-width: 80%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .lose-message {
+            /* พื้นหลังสีแดงเข้มไล่ระดับ ให้ดูแพงขึ้น */
+            background: linear-gradient(to bottom, #c0392b, #96281b);
+            color: #ffffff;
+            border: 3px solid #7c1e15;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            animation: fadeInBounce 0.6s ease-out;
+        }
+
+        @keyframes fadeInBounce {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            70% { transform: translateY(-5px) scale(1.02); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧧 อังเปาให้โชค (ลุ้นรับ เครดิตฟรี)🪙สูงสุด 1000 บาท </h1>
+
+    <div class="box-container">
+        <div class="mystery-box" onclick="openBox(this)">🧧</div>
+        <div class="mystery-box" onclick="openBox(this)">🧧</div>
+        <div class="mystery-box" onclick="openBox(this)">🧧</div>
+        <div class="mystery-box" onclick="openBox(this)">🧧</div>
+        <div class="mystery-box" onclick="openBox(this)">🧧</div>
+    </div>
+
+    <div id="result-area"></div>
+
+    <script>
+        // ตัวแปรเช็คว่าเล่นไปหรือยัง
+        let hasPlayed = false;
+
+        // รายการรางวัล (มีไว้โชว์ในโค้ด แต่ Logic จริงจะถูกบังคับ)
+        const prizes = [
+            "100 เครดิต",
+            "300 เครดิต",
+            "500 เครดิต",
+            "1000 เครดิต",
+            "เสียใจด้วย ไม่ได้รับรางวัล"
+        ];
+
+        function openBox(element) {
+            // เช็คว่าเคยเล่นไปหรือยัง ถ้าเล่นแล้วให้หยุดทำงานทันที
+            if (hasPlayed) {
+                return;
+            }
+
+            // ตั้งค่าว่าเล่นแล้ว
+            hasPlayed = true;
+
+            // 1. เปลี่ยนสไตล์กล่องที่ถูกเลือก
+            element.classList.add('opened');
+            // ไม่ต้องเปลี่ยน innerHTML เป็น X แล้ว เพราะใช้รูปกล่องสวยกว่า
+
+            // 2. ปิดการใช้งานกล่องอื่นๆ ทั้งหมด
+            const allBoxes = document.querySelectorAll('.mystery-box');
+            allBoxes.forEach(box => {
+                // หยุด animation ดุ๊กดิ๊กทันทีเมื่อมีกล่องถูกเปิด
+                box.style.animation = 'none';
+                
+                if (box !== element) {
+                    box.classList.add('disabled');
+                }
+            });
+
+            // 3. กำหนดผลลัพธ์ (ล็อคผล 100% ตามที่ต้องการ)
+            const lockedResult = "เสียใจด้วย ไม่ได้รับรางวัล";
+
+            // 4. แสดงผลลัพธ์
+            const resultArea = document.getElementById('result-area');
+            // เพิ่ม icon หน้าข้อความ
+            resultArea.innerHTML = "😢 " + lockedResult;
+            resultArea.classList.add('lose-message');
+        }
+    </script>
+
+</body>
+</html>
